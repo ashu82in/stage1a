@@ -394,7 +394,7 @@ def updateTable():
 #     im_resized = im.crop(box)
 #     return im_resized
 
-st.title("Stage 1 - Upload Observation")
+st.title("Stage 1a - Upload Observation - No Sorting")
 obs_file = st.file_uploader("Upload Observation Excel File", type=['csv','xlsx'],accept_multiple_files=False,key="fileUploader", on_change=createfile)
 if obs_file is not None:
     # uplaod remedy file
