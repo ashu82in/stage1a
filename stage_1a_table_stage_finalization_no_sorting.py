@@ -473,7 +473,10 @@ if obs_file is not None:
     except:
         pass
     df2.rename(columns = {'Location_Final':'Location'}, inplace = True)
-    col_idx = ["Sl", "Element", "Observations", "Action Needed", "Location", "Category", "Image No." , "Remarks/ Action By", "Image Number"]
+    try:
+        col_idx = ["Sl", "Element", "Observations", "Action Needed", "Location", "Category", "Image No." , "Remarks/ Action By", "Image Number", "Segment"]
+    except:
+        col_idx = ["Sl", "Element", "Observations", "Action Needed", "Location", "Category", "Image No." , "Remarks/ Action By", "Image Number"]
     df2 = df2.reindex(columns=col_idx)
     # st.write(df)
     st.title("Do you want to Modify the Location")
@@ -500,7 +503,10 @@ if obs_file is not None:
     
     
     st.write("Table Column Width in cm")
-    no_of_cols = len(df2.columns)
+    if "Segment" in df2.columns:
+        no_of_cols = len(df2.columns) -1
+    else:
+        no_of_cols = len(df2.columns)
     default_co_width = [1.5, 3.0, 3.5, 4.5, 7.75, 2, 1.75,2]
     col_list = st.columns(no_of_cols-1)
     final_col_width= [i for i in default_co_width]
@@ -702,15 +708,23 @@ if obs_file is not None:
             df_for_excel["No of Images"] = 0
             # st.write(df_for_excel)
             for idx, rows in df_for_excel.iterrows():
-                temp_value = str(rows[8]).split(",")
-                temp_value = [t.strip() for t in temp_value]
-                df_for_excel.loc[idx, "No of Images"] = len(temp_value)
+                if rows[8] != "nan":
+                    temp_value = str(rows[8]).split(",")
+                    temp_value = [t.strip() for t in temp_value]
+                    df_for_excel.loc[idx, "No of Images"] = len(temp_value)
+                else:
+                    df_for_excel.loc[idx, "Image Number"] = np.nan
+                    df_for_excel.loc[idx, "No of Images"] = 0
             df_for_excel["Section"] = 1
-            col_idx_temp = ["Sl", "Element", "Observations", "Action Needed", "Location", "Category", "Image No." , "Remarks/ Action By", "Section", "No of Images", "Image Number"]
+            try:
+                col_idx_temp = ["Sl", "Element", "Observations", "Action Needed", "Location", "Category", "Image No." , "Remarks/ Action By", "Section", "No of Images", "Image Number", "Segment"]
+            except:
+                col_idx_temp = ["Sl", "Element", "Observations", "Action Needed", "Location", "Category", "Image No." , "Remarks/ Action By", "Section", "No of Images", "Image Number"]
             df_for_excel = df_for_excel.reindex(columns=col_idx_temp)
             # st.write("in the function")
             # st.write(df_final)
             # st.write(df_for_excel)
+            
             df_for_excel.to_excel("stage_5_input_table.xlsx")  
             try:
                 with open("test.docx", "rb") as fp:
