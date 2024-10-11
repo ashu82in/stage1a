@@ -444,19 +444,29 @@ if obs_file is not None:
         # st.write(idx)
         # st.write(row[image_col])
         # st.write(df.loc[1,"Observations"])
-        temp_value = row[image_col].split(",")
-        temp_value = [t.strip() for t in temp_value]
+        if str(row[image_col]) == "nan" or str(row[image_col]) == "-":
+            temp_value = ""
+            no_of_img = 0
+        else:
+            temp_value = row[image_col].split(",")
+            temp_value = [t.strip() for t in temp_value]
         # st.write(temp_value)
-        img_master_list = img_master_list + temp_value
-        no_of_img = int(len(temp_value))
+            img_master_list = img_master_list + temp_value
+            no_of_img = int(len(temp_value))
         # df.loc[idx, "Image List"] = temp_value
         df.loc[idx, "No of Images"] = no_of_img
         df.loc[idx, "Start Image Number"]  = start_val
-        df.loc[idx, "End Image Number"]  = start_val+no_of_img -1
+        if no_of_img>0:
+            df.loc[idx, "End Image Number"]  = start_val+no_of_img -1
+        else:
+            df.loc[idx, "End Image Number"] = start_val
         if no_of_img>1:
             df.loc[idx, "Image No."] = "00" + str(start_val) +" - 00" + str(start_val+no_of_img -1)
-        else:
+        elif no_of_img ==1 :
             df.loc[idx, "Image No."] = "00" + str(start_val)
+        else:
+            df.loc[idx, "Image No."] = "00"
+        
         for ctr in range(no_of_img):
             img_new_old_dict[temp_value[ctr]] = start_val + ctr
             location_dict[start_val + ctr] = df.loc[idx, "Location_Final"] 
@@ -708,7 +718,7 @@ if obs_file is not None:
             df_for_excel["No of Images"] = 0
             # st.write(df_for_excel)
             for idx, rows in df_for_excel.iterrows():
-                if rows[8] != "nan":
+                if str(rows[8]) != "nan" and str(rows[8]) != "-"  :
                     temp_value = str(rows[8]).split(",")
                     temp_value = [t.strip() for t in temp_value]
                     df_for_excel.loc[idx, "No of Images"] = len(temp_value)
